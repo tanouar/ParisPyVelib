@@ -8,7 +8,7 @@ Analyser les compteurs de vélo à Paris, illustrer la fréquentation des diffé
 
 - Equipe Projet :
 
-Tarik Anouar [<img align="left" alt="codeSTACKr | LinkedIn" width="22px" src="https://fr.linkedin.com/in/anouartarik" />][linkedin]
+Tarik Anouar
 Céline Dussot
 Hermine Berton
 
@@ -16,6 +16,7 @@ Hermine Berton
 
 #### Language et outils
 [<img align="left" alt="GitHub" width="26px" src="https://raw.githubusercontent.com/github/explore/78df643247d429f6cc873026c0622819ad797942/topics/github/github.png" />][webdevplaylist]
+[<img align="left" alt="GitHub" width="26px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Python_logo_and_wordmark.svg/1920px-Python_logo_and_wordmark.svg.png" />][webdevplaylist]
 
 <br />
 <br />
