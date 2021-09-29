@@ -7,10 +7,9 @@
 Analyser les compteurs de vélo à Paris, illustrer la fréquentation des différents compteurs et identifier un modèle de prédictions.
 
 - Equipe Projet :
-
-Tarik Anouar
-Céline Dussot
-Hermine Berton
+	* Tarik Anouar
+	* Céline Dussot
+	* Hermine Berton
 
 <br />
 
