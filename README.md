@@ -1,22 +1,24 @@
 # ParisPyVelib
+<img  align="center" width="300px" src="https://datascientest.com/wp-content/uploads/2020/10/logo-text-right-768x130.png.webp" />
 
 #### Projet de formation DataSciencetest du parcours Data Analyst 
 
-- Objectifs :
+#### Objectifs :
 
 Analyser les compteurs de vélo à Paris, illustrer la fréquentation des différents compteurs et identifier un modèle de prédictions.
 
-- Equipe Projet :
-	* Tarik Anouar
-	* Céline Dussot
-	* Hermine Berton
+#### Equipe Projet :
+
+* Tarik Anouar
+	
+* Céline Dussot
+	
+* Hermine Berton
 
 <br />
 
-#### Language et outils
-* <img align="left" alt="GitHub" width="26px" src="https://raw.githubusercontent.com/github/explore/78df643247d429f6cc873026c0622819ad797942/topics/github/github.png" />
-* <img align="left" alt="GitHub" width="26px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/2048px-Python-logo-notext.svg.png" />
-* <img align="left" alt="GitHub" width="26px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Jupyter_logo.svg/1200px-Jupyter_logo.svg.png" />
+#### :computer: Language et outils
+<img alt="GitHub" width="40px" src="https://raw.githubusercontent.com/github/explore/78df643247d429f6cc873026c0622819ad797942/topics/github/github.png" /> &nbsp;&nbsp;&nbsp;&nbsp;<img alt="GitHub" width="40px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/2048px-Python-logo-notext.svg.png" />&nbsp;&nbsp;&nbsp;&nbsp;<img alt="GitHub" width="40px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Jupyter_logo.svg/1200px-Jupyter_logo.svg.png" />
 
 <br />
 <br />
