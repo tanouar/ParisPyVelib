@@ -18,6 +18,7 @@ import streamlit as st
 
 
 # Streamlit
+# streamlit run ParisPyVelib_Demo.py
 
 st.sidebar.title('Projet ParisPyVelib')
 st.sidebar.image('Velib.png')
