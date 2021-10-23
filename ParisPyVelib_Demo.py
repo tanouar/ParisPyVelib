@@ -1,19 +1,29 @@
 # Import library:
 import pandas as pd
-import numpy as np
+# import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
+import os
 
-# Définition du chemin d'accès:
-### Data Scientest:
-#%cd Datas
-### Céline:
-#%C:\Users\Celine\Desktop\GitHub\ParisPyVelib_Datas
-### Hermine:
-#%cd C:\Users\h.berthon\Documents\GitHub\ParisPyVelibHB\ParisPyVelib_Datas
-### Tarik:
-#%cd C:\Users\Home\Documents\Git\ParisPyVelib\Data
+# Récupération du répertoire courant
+currentPath = os.getcwd()
+print('Current path : ', currentPath)
+
+# Définition du répertoire contenant les données
+datasPath = currentPath + '\\' + 'Datas'
+print('Set path with datas : ', datasPath)
+
+
+# Définition du chemin d'accès des datasets sources
+dataset_2018_comptage_velo_donnees_compteurs = datasPath + '\\' + '2018_comptage-velo-donnees-compteurs.csv'
+dataset_2019_comptage_velo_donnees_compteurs = datasPath + '\\' + '2019_comptage-velo-donnees-compteurs.csv'
+dataset_2020_comptage_velo_donnees_compteurs = datasPath + '\\' + '2020_comptage-velo-donnees-compteurs.csv'
+dataset_New_comptage_velo_donnees_compteurs = datasPath + '\\' + 'New_comptage-velo-donnees-compteurs.csv'
+
+# Définition du chemin d'accès du dataset final
+dataset_2018_2021_donnees_velib_meteo_hour = datasPath + '\\' + '2018-2021_donnees-velib-meteo_hour.csv'
+
 
 
 
@@ -44,13 +54,13 @@ if parties == sommaire[1]:
         option = st.selectbox('Sélectionner le dataset', [2018, 2019, 2020, '04/2020 - 05/2021'])
         st.text('Affichage des 5 premières lignes du dataset')
         if option == 2018:
-            df = pd.read_csv(r'C:\Users\Celine\Desktop\GitHub\ParisPyVelib_Datas\2018_comptage-velo-donnees-compteurs.csv', sep = ';')
+            df = pd.read_csv(dataset_2018_comptage_velo_donnees_compteurs , sep = ';')
         if option == 2019:
-            df = pd.read_csv(r'C:\Users\Celine\Desktop\GitHub\ParisPyVelib_Datas\2019_comptage-velo-donnees-compteurs.csv', sep = ';')
+            df = pd.read_csv(dataset_2019_comptage_velo_donnees_compteurs, sep = ';')
         if option == 2020:
-            df = pd.read_csv(r'C:\Users\Celine\Desktop\GitHub\ParisPyVelib_Datas\2020_comptage-velo-donnees-compteurs.csv', sep = ';')
+            df = pd.read_csv(dataset_2020_comptage_velo_donnees_compteurs, sep = ';')
         if option == '04/2020 - 05/2021':
-            df = pd.read_csv(r'C:\Users\Celine\Desktop\GitHub\ParisPyVelib_Datas\New_comptage-velo-donnees-compteurs.csv', sep = ';')
+            df = pd.read_csv(dataset_New_comptage_velo_donnees_compteurs, sep = ';')
         st.write(df.head())
         st.subheader('Source des données')
 
@@ -59,7 +69,7 @@ if parties == sommaire[2]:
     st.title(parties)
         
     # Import du df_hour
-    df_hour = pd.read_csv(r'C:\Users\Celine\Desktop\GitHub\ParisPyVelib_Datas\2018-2021_donnees-velib-meteo_hour.csv')
+    df_hour = pd.read_csv(dataset_2018_2021_donnees_velib_meteo_hour)
     # Suppression des col inutiles
     df = df_hour.drop(['Date', 'Date_instal', 'Source', 'Direction',
        'Latitude', 'Longitude', 'Coord', 'Y_Date_Instal',
@@ -156,7 +166,19 @@ if parties == sommaire[3]:
 
 # Prédiction du trafic    
 if parties == sommaire[4]:
-    st.title(parties)    
+    
+    st.title(parties)
+
+    st.header('Observation de la target')
+    # st.subheader('Observation de la cible')
+      
+    
+    st.markdown("""Selectionner le compteur qui comptabilise le plus de passage afin d'observer 
+                l'évolution de la variable *Count_by_hour* pendant une journée. 
+                L'objectif est de determiner si la variable *Count_by_hour* suit une distribution 
+                probabilistique connue.""")
+    
+   
 
 # Conclusion et Perspectives
 if parties == sommaire[5]:
