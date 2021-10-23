@@ -32,7 +32,7 @@ dataset_2018_2021_donnees_velib_meteo_hour = datasPath + '\\' + '2018-2021_donne
 
 st.sidebar.title('Projet ParisPyVelib')
 st.sidebar.image('Velib.png')
-sommaire = ['Introduction', 'Datasets', 'Evolution Temporelle', 'Cartographie', 'Prédiction du trafic', 'Conclusion et Perspectives']
+sommaire = ['Introduction', 'Datasets', 'Evolution Temporelle', 'Prédiction du trafic', 'Conclusion et Perspectives']
 parties = st.sidebar.radio('', sommaire)
 
 
@@ -75,9 +75,9 @@ if parties == sommaire[2]:
        'Latitude', 'Longitude', 'Coord', 'Y_Date_Instal',
        'M_Date_Instal', 'D_Date_Instal', 'T°C', 'Precip_last3h', 'HR%',
        'High_ice', 'Wind_speed_mean10mn', 'City_meteo', 'Datetime',
-       'nom_jour_ferie', 'vacances_zone_c', 'nom_vacances', 'Confinement_id', 'Id'], axis = 1) 
+       'nom_jour_ferie', 'vacances_zone_c', 'nom_vacances', 'Confinement_id', 'Id','Unnamed: 0'], axis = 1) 
     # Création d'un df par année et par compteurs
-    col = ['Y_Date_Count','Address_Dir']
+    col = ['Y_Date_Count','Address', 'Address_Dir']
     df_year = df.groupby(col).mean().reset_index()
     # Création d'un df par mois et par compteurs
     col = ['Y_Date_Count','M_Date_Count']
@@ -86,7 +86,7 @@ if parties == sommaire[2]:
 
     parties = st.radio('', ['I. Evolution du comptage horaire des vélos de 2018 à 2021',
                             'II. Evolution du comptage horaire des vélos par jour',
-                            'III. Evolution des top10 et Less10 des compteurs Parisien'])
+                            'III. Classement des compteurs Parisien'])
     
     if parties == 'I. Evolution du comptage horaire des vélos de 2018 à 2021': 
         st.markdown("""De façon général, on peut remarquer que l'utilisation des vélos augmentent au fil des années comme le montre le graphique ci-dessous. 
@@ -130,6 +130,9 @@ if parties == sommaire[2]:
         st.pyplot(fig)
     
     if parties == 'II. Evolution du comptage horaire des vélos par jour':
+        
+        st.markdown("""L’utilisation des vélos est principalement utilisée en tant que mode de transport pour le trajet domicile-travail. En effet, on peut remarquer sur les graphiques ci-dessous une différence notable entre la semaine et les weekends. """)
+        
         # Création d'un df par jour de semaine et par compteurs
         col = ['Y_Date_Count','M_Date_Count','Dweek_Date_Count']
         df_day = df.groupby(col).mean().reset_index()
@@ -157,15 +160,36 @@ if parties == sommaire[2]:
         plt.legend(['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'])
         st.pyplot(fig)      
     
-    if parties == 'III. Evolution des top10 et Less10 des compteurs Parisien':
-        st.write('A compléter')
-       
-# Cartographie
-if parties == sommaire[3]:
-    st.title(parties)
+        st.markdown("""En semaine, la fréquentation est plus intense que les weekends. Deux pics de circulation sont présents le matin et l'après-midi, correspondant aux heures de pointe du travail. Les deux pics ayant une allure quasi identique, cela pourrait montrer que ce sont les mêmes cyclistes à l’aller et au retour de leur trajet domicile-travail.   
 
+Le weekend, la distribution est plus dispersée tout au long de la journée, avec une gaussienne plus aplatie. Nous avons remarqué également que les jours fériés se comportent comme les weekends.
+""")
+    
+    if parties == 'III. Classement des compteurs Parisien':
+        st.markdown("""""")
+        
+        annee = st.selectbox("""Sélectionner l'année""", [2018, 2019, 2020, 2021])
+        df2 = df_year[df_year['Y_Date_Count'] == annee].sort_values(by = 'Count_by_hour', ascending = False)
+
+        # Toutes les adresses
+        fig = plt.figure(figsize = (10,20))
+        plt.subplot(131)
+        sns.barplot(x = df2['Count_by_hour'], y = df2['Address_Dir'], color = '#FD8D3C');
+        plt.title('Adresses avec direction', fontsize = 20)
+        plt.xlabel('Comptage moyen de vélos / heure / site')
+        plt.ylabel('')
+
+        # Adresse
+        plt.subplot(133)
+        sns.barplot(x = df2['Count_by_hour'], y = df2['Address'], color = '#3FE3BD');
+        plt.title('Adresses sans direction', fontsize = 20)
+        plt.xlabel('Comptage moyen de vélos / heure / site')
+        plt.ylabel('')
+        st.pyplot(fig) 
+
+       
 # Prédiction du trafic    
-if parties == sommaire[4]:
+if parties == sommaire[3]:
     
     st.title(parties)
 
@@ -177,9 +201,30 @@ if parties == sommaire[4]:
                 l'évolution de la variable *Count_by_hour* pendant une journée. 
                 L'objectif est de determiner si la variable *Count_by_hour* suit une distribution 
                 probabilistique connue.""")
-    
    
 
 # Conclusion et Perspectives
-if parties == sommaire[5]:
-    st.title(parties) 
+if parties == sommaire[4]:
+    st.title('Conclusion') 
+    st.markdown("""Le projet ParisPyVelib avait pour but différents objectifs : analyse et traitement des données, visualisation et prédiction du traffic.
+
+L’objectif de se familiariser avec les données, de les nettoyer et les traiter dans le but de pouvoir s’en servir pour de la visualisation ou de la prédiction a été accompli malgré des difficultés rencontrées afin d’harmoniser toutes les données récoltées entre 2018 et 2021.
+
+De même, la partie visualisation a permis d’obtenir des informations et des tendances sur l’utilisation des vélos dans Paris (fréquentation majoritairement en heure de pointe en semaine pour trajet domicile-travail, augmentation au fil des années, effet du 1er confinement, quartier les plus fréquentés…). Les pistes d’améliorations concernant cette partie, seraient d’une part d’étudier l’augmentation de la part de vélo par rapport aux autres modes transports (voiture, métro…). Les datasets source ont été trouvés sur ce sujet, mais non exploités faute de temps. D’autre part, d’analyser en temps réel de la circulation des cyclistes.
+
+Concernant la partie modélisation en vue de prédire le trafic des vélos, l’objectif a été partiellement atteint. La comparaison entre un modèle “simple” basé sur une moyenne sur l’année n-1 et un modèle Random Forest donne une précision équivalente.  
+Il est envisageable d’améliorer les scores de prédictions en explorant plusieurs pistes :  
+●	Simplification des features actuelles  
+●	Analyse des erreurs du modèle et biais potentiel du dataset  
+●	Ajouts de features (jours de grèves, événements sportifs, manifestation, etc)  
+●	Test d’autre algorithme de classification  
+Cependant, la précision de modèle atteint une moyenne d'environ 80% ce qui reste suffisant tout en s’accordant une incertitude raisonnable. L'optimisation du modèle demanderait beaucoup plus de temps d’étude qu'initialement envisagé en début de projet.
+""")
+
+    st.title('Perspectives') 
+    st.markdown("""Les perspectives d’utilisations de ses données sont multiples :
+
+Tout d’abord, l’analyse et la prédiction du trafic cycliste peut permettre à la mairie de Paris d’étudier de manière précise l’impact de certains facteurs (météo, accidents, etc.). Ceux-ci influent sur le comportement des vélos et ainsi la mairie peut optimiser leur circulation en les protégeant grâce à l’aménagement de pistes cyclables efficaces.	
+
+De plus, en combinant l’analyse et le machine learning, il est envisageable de pouvoir créer à l’image d’autres applications pour voiture (Waze), une application pour améliorer les trajets des vélos au quotidien à Paris en fluidifiant le trafic, par exemple. Celui-ci pouvant être étendu aux autres grandes agglomérations comme Bordeaux. 
+""")    
