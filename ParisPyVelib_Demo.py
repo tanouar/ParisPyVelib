@@ -1,10 +1,12 @@
 # Import library:
 import pandas as pd
-# import numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 import os
+
+
 
 # Récupération du répertoire courant
 currentPath = os.getcwd()
@@ -23,9 +25,6 @@ dataset_New_comptage_velo_donnees_compteurs = datasPath + '\\' + 'New_comptage-v
 
 # Définition du chemin d'accès du dataset final
 dataset_2018_2021_donnees_velib_meteo_hour = datasPath + '\\' + '2018-2021_donnees-velib-meteo_hour.csv'
-
-
-
 
 # Streamlit
 # streamlit run ParisPyVelib_Demo.py
@@ -167,16 +166,56 @@ if parties == sommaire[3]:
 # Prédiction du trafic    
 if parties == sommaire[4]:
     
+    # Import librairie et chargement des données pour prédiction du traffic
+    import datetime
+    from rfModel import preLoadDataset, rfMmodel   
+    data = preLoadDataset("Datas/2018-2021_donnees-velib-meteo_hour.csv")
+    
     st.title(parties)
 
-    st.header('Observation de la target')
+    st.header('Prédiction de la target *Count_by_hour*')
     # st.subheader('Observation de la cible')
       
     
-    st.markdown("""Selectionner le compteur qui comptabilise le plus de passage afin d'observer 
-                l'évolution de la variable *Count_by_hour* pendant une journée. 
-                L'objectif est de determiner si la variable *Count_by_hour* suit une distribution 
-                probabilistique connue.""")
+    st.markdown("""Selectionner un compteur ainsi qu'une date. Observer la variable cible *Count_by_hour* 
+                ainsi que les prédiction realisé par le modèle Random Forest pendant une journée.""")
+                
+    # Selection du compteur via selectbox            
+    selectAddress = st.selectbox('select address', data.Address_Dir.unique())
+    st.write('Addresse selectionné :', selectAddress)
+    
+    # Selection du jour, mois et années par l'utilisateur
+    d = st.date_input('selection de la date', datetime.date(2020, 7, 6))
+    st.write('Date selectionnée:', d)
+    
+    # Calcul des prédictions en fonction du compteurs, et de la date
+    # resultats = rfMmodel(selectAddress, 2020, 7, 1, data=data)
+    resultats = rfMmodel(selectAddress, d.year, d.month, d.day, data=data)
+    
+    figure = plt.figure(figsize = (18,9))
+    hh = np.arange(0, 24, 1)    
+    
+    # Affichage de la variable target
+    plt.plot(hh, resultats[0], color="black")
+    plt.scatter(hh, resultats[0], color="black")
+    
+    # Affichage des prédictions    
+    plt.plot(hh, resultats[1], color="red")
+    plt.scatter(hh, resultats[1], color="red")
+    
+    # Ajout de la valeur max et min de chaque classes prédites comme contours
+    plt.fill_between(hh, resultats[2], resultats[3], alpha=0.1, color="blue")
+           
+    plt.xlabel('Heure')
+    plt.ylabel('Nombre de velo')
+    plt.legend(['target : Count_by_hour', 'Prediction : Mean Count_by_hour'])
+    plt.title("Prédiction et Target en fonction de l'heure de la journée, compteur")
+    plt.grid('--')
+    plt.xticks(np.arange(0, 24, 1));
+
+    st.pyplot(figure)
+    
+    st.write('Score :', resultats[4], '%')
     
    
 
