@@ -7,9 +7,8 @@ Created on Sun Oct 24 13:27:37 2021
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn import preprocessing, svm, model_selection, neighbors, ensemble
-import warnings
-warnings.filterwarnings('ignore')
+from sklearn import preprocessing, ensemble
+import time
 
 
 def rfMmodel(Address_Dir,  
@@ -37,7 +36,7 @@ def rfMmodel(Address_Dir,
     
     """
     
-   
+    start = time.time()
   
     # affectaction du dataset data au dataframe df
     df = data
@@ -47,8 +46,9 @@ def rfMmodel(Address_Dir,
     df = df[df.Y_Date_Count == Y_Date_Count ]
     
     # Supression des colonnes non utile pour le modele
-    df = df.drop(['Unnamed: 0', 'Coord', 'City_meteo', 'vacances_zone_c', 'Address', 'Date', 'Address_Dir',
-                  'Source', 'Id', 'Y_Date_Instal', 'M_Date_Instal', 'D_Date_Instal', 'Date_instal'], axis = 1)
+    # df = df.drop(['Unnamed: 0', 'Coord', 'City_meteo', 'vacances_zone_c', 'Address', 'Date', 'Address_Dir',
+    #               'Source', 'Id', 'Y_Date_Instal', 'M_Date_Instal', 'D_Date_Instal', 'Date_instal', 'Datetime'], axis = 1)
+    
     
     # Ajout de la variable AP et PM
     df['AM_PM'] = ['AM' if x < 12 else 'PM' for x in df['H_Date_Count']]
@@ -134,30 +134,77 @@ def rfMmodel(Address_Dir,
             
     target_to_predict = list(target_to_predict)
     score = (clf.score(X_test_scaled, y_test)*100).round(2)
-            
+    
+    end = time.time()
+    t = end - start    
+        
     # print(target_to_predict)
     # print(pred)
     # print(pred_min)
     # print(pred_max)
     # print(score)
+    print("processing time : ", "%.2f" %t, "s")
+    
     
     return target_to_predict, pred, pred_min, pred_max, score
 
 
 
 def preLoadDataset(filePath):
-    df = pd.read_csv(filePath)
+    
+    start = time.time()
+    
+    cols = ['Count_by_hour',
+             # 'Direction',
+             # 'Latitude',
+             # 'Longitude',
+             'Y_Date_Count',
+             'M_Date_Count',
+             'D_Date_Count',
+             'Dweek_Date_Count',
+             'H_Date_Count',
+             'T°C',
+             'Precip_last3h',
+             'HR%',
+             # 'High_ice',
+             'Wind_speed_mean10mn',
+             # 'nom_jour_ferie',
+             'nom_vacances',
+             'Confinement_id', 'Address_Dir']
+    
+    df = pd.read_csv(filePath, usecols=(cols))
     df = df.fillna(method="ffill")
     df = df.fillna(method="bfill")
+    
+    end = time.time()
+    t = end - start 
+    
+    print("loading time : ", "%.2f" %t, "s")
     
     return df
 
 
+def preLoadH5(filePath, key):
+    
+    start = time.time()
+    
+    df = pd.read_hdf(filePath, key)
+    
+    end = time.time()
+    t = end - start 
+    
+    print("loading time : ", "%.2f" %t, "s")
+    
+    return df
+
+
+
 if __name__ == '__main__':
     
-    preLoadDataset()
-    rfMmodel()
+    # Chargement des données
+    print('loading Dataset')
+    data = preLoadDataset("Datas/2018-2021_donnees-velib-meteo_hour.csv")       
     
-    # Exemple
-    # data = preLoadDataset("Datas/2018-2021_donnees-velib-meteo_hour.csv")       
-    # rfMmodel("BD MAGENTA NO-SE", 2019, 4, 1, data=data)
+    # Enregistrement des données au format h5
+    print("saving dataset in new format")
+    data.to_hdf("Datas/machineLearningDataset.h5", 'dst')        
