@@ -5,14 +5,20 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 import os
+import datetime
+from rfModel import rfMmodel, preLoadH5
+# data = pd.DataFrame()
+
+# data = preLoadDataset("Datas/2018-2021_donnees-velib-meteo_hour.csv")
+data = preLoadH5("Datas/machineLearningDataset.h5", 'dst')
 
 # Récupération du répertoire courant
 currentPath = os.getcwd()
-print('Current path : ', currentPath)
+# print('Current path : ', currentPath)
 
 # Définition du répertoire contenant les données
 datasPath = currentPath + '\\' + 'Datas'
-print('Set path with datas : ', datasPath)
+# print('Set path with datas : ', datasPath)
 
 
 # Définition du chemin d'accès des datasets sources
@@ -31,16 +37,17 @@ dataset_2018_2021_donnees_velib_meteo_hour = datasPath + '\\' + '2018-2021_donne
 # streamlit run ParisPyVelib_Demo.py
 
 st.sidebar.title('Projet ParisPyVelib')
-st.sidebar.image('Velib.png')
+st.sidebar.image('Pictures/Velib.png')
 sommaire = ['Introduction', 'Datasets', 'Evolution Temporelle', 'Prédiction du trafic', 'Conclusion et Perspectives']
 parties = st.sidebar.radio('', sommaire)
+
 
 # Introduction
 
 
 if parties == sommaire[0]:
     st.title('ParisPyVelib')
-    st.image('Velib.png')
+    st.image('Pictures/Velib.png')
     st.header('Analyse et prédiction du trafic des vélos de 2018 à 2021 dans la ville de Paris')
     st.markdown('''<p style='text-align: justify'>Projet réalisé par Tarik Anouar, Céline Doussot et Hermine Berthon en tant que projet fil-rouge de la formation de Data Analyst de DataScientest.
                  </p>''',  unsafe_allow_html=True)
@@ -126,7 +133,7 @@ if parties == sommaire[1]:
                     cible est le comptage horaire mais les autres colonnes importantes pour son étude et prédiction, sont les colonnes
                     temporelles ainsi que les coordonnées géographiques.
                     </p>''',  unsafe_allow_html=True)
-    
+        
     if data == 'Données météo':
         st.header('Description')
         st.markdown('''<p style='text-align: justify'>
@@ -136,8 +143,10 @@ if parties == sommaire[1]:
                     permettant un accès libre sur toutes les données météos provenant de la ville d'Athis-Mons (91),
                     seul compteur disponible en île-de-France. Cela correspond, après sélection de 2018 à 2021,(même période que pour les compteurs vélib) 
                     à un dataframe de 9944 rows × 82 columns. Celui-ci a ensuite été réduit, par la suite, pour ne sélectionner que les données intéressantes.
-                    </p>''',  unsafe_allow_html=True)            
-        
+                    </p>''',  unsafe_allow_html=True)
+        df_meteo =pd.read_csv("Datas/donnees-synop-essentielles-omm.csv")
+        st.write(df_meteo.head())
+
 
     if data == 'Dataset final':
         st.header('Description')
@@ -172,23 +181,25 @@ if parties == sommaire[1]:
              'M_Date_Count', 'D_Date_Count', 'Dweek_Date_Count', 'H_Date_Count',
              'Y_Date_Instal', 'M_Date_Instal', 'D_Date_Instal',
              'T°C', 'Precip_last3h', 'HR%', 'High_ice','Wind_speed_mean10mn']
+        
 
         df_final['Latitude'] = df_final['Latitude'].astype('float64')
         df_final['Longitude'] = df_final['Longitude'].astype('float64')
         option2 = st.selectbox('Sélectionner la variable', Liste_col) 
-        
-        fig = plt.figure(figsize = (10,4))
-        sns.boxplot(data=df_final, y=Liste_col, x = 'Y_Date_Count')
-        st.pyplot(fig)
+        for col in Liste_col:
+            if option2 == col:
+                fig = plt.figure(figsize = (10,4))
+                st.write(sns.boxplot(data=df_final, y=col, x = 'Y_Date_Count'))
+                st.pyplot(fig)
         
 
-        
         
 # Evolution Temporelle
 if parties == sommaire[2]:
     st.title(parties)
-        
 
+    # Import du df_hour
+    df_hour = pd.read_csv(dataset_2018_2021_donnees_velib_meteo_hour)
     # Suppression des col inutiles
     df = df_hour.drop(['Date', 'Date_instal', 'Source', 'Direction',
        'Latitude', 'Longitude', 'Coord', 'Y_Date_Instal',
@@ -316,17 +327,10 @@ if parties == sommaire[2]:
 
 # Prédiction du trafic    
 if parties == sommaire[3]:
-    
-    # Import librairie et chargement des données pour prédiction du traffic
-    import datetime
-    from rfModel import preLoadDataset, rfMmodel   
-    data = preLoadDataset("Datas/2018-2021_donnees-velib-meteo_hour.csv")
-    
+               
     st.title(parties)
 
-    st.header('Prédiction de la target *Count_by_hour*')
-    # st.subheader('Observation de la cible')
-      
+    st.header('Prédiction de la target *Count_by_hour*')    
     
     st.markdown("""<p style='text-align: justify'>Selectionner un compteur ainsi qu'une date. Observer la variable cible
                 *Count_by_hour* ainsi que les prédiction realisées par le modèle Random Forest pendant une journée.
@@ -334,16 +338,16 @@ if parties == sommaire[3]:
                 
     # Selection du compteur via selectbox            
     selectAddress = st.selectbox('select address', data.Address_Dir.unique())
-    st.write('Addresse selectionné :', selectAddress)
+    st.write('Addresse selectionnée :', selectAddress)
     
     # Selection du jour, mois et années par l'utilisateur
-    d = st.date_input('selection de la date', datetime.date(2020, 7, 6))
+    d = st.date_input('Selection de la date', datetime.date(2020, 7, 6))
     st.write('Date selectionnée:', d)
+
     
     # Calcul des prédictions en fonction du compteurs, et de la date
-    # resultats = rfMmodel(selectAddress, 2020, 7, 1, data=data)
     resultats = rfMmodel(selectAddress, d.year, d.month, d.day, data=data)
-    
+
     figure = plt.figure(figsize = (18,9))
     hh = np.arange(0, 24, 1)    
     
