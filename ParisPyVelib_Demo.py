@@ -49,8 +49,8 @@ if parties == sommaire[0]:
     st.title('ParisPyVelib')
     st.image('Pictures/Velib.png')
     st.header('Analyse et prédiction du trafic des vélos de 2018 à 2021 dans la ville de Paris')
-    st.markdown('''Projet réalisé par... en tant que projet fil-rouge de la formation de Data Analyst de DataScientest...
-                ''')
+    st.markdown('''<p style='text-align: justify'>Projet réalisé par Tarik Anouar, Céline Doussot et Hermine Berthon en tant que projet fil-rouge de la formation de Data Analyst de DataScientest.
+                 </p>''',  unsafe_allow_html=True)
     st.markdown('''<p style='text-align: justify'>
                 Un peu partout dans Paris, des totems bleus sont placés le long des grandes artères. Ces bornes, servent à comptabiliser 
                 chaque jour le nombre de cyclistes, par heure à divers endroits de la ville, le plus souvent dans les deux sens de circulation.
@@ -133,9 +133,7 @@ if parties == sommaire[1]:
                     cible est le comptage horaire mais les autres colonnes importantes pour son étude et prédiction, sont les colonnes
                     temporelles ainsi que les coordonnées géographiques.
                     </p>''',  unsafe_allow_html=True)
-        st.header('Distribution')
         
-    
     if data == 'Données météo':
         st.header('Description')
         st.markdown('''<p style='text-align: justify'>
@@ -146,33 +144,60 @@ if parties == sommaire[1]:
                     seul compteur disponible en île-de-France. Cela correspond, après sélection de 2018 à 2021,(même période que pour les compteurs vélib) 
                     à un dataframe de 9944 rows × 82 columns. Celui-ci a ensuite été réduit, par la suite, pour ne sélectionner que les données intéressantes.
                     </p>''',  unsafe_allow_html=True)
-        st.header('Preprocessing')
-        st.markdown('''<p style='text-align: justify'>
-                    Lorsque nous avons voulu introduire les données météos à notre dataset initial, nous
-nous sommes aperçus que de nombreuses colonnes étaient inutiles ou comportaient beaucoup
-de NANs. De plus, les données météo n’étaient mises à jour que toutes les 3h et non toutes les
-heures comme notre dataset standard. Pour pallier ce problème, nous avons sélectionné
-certaines colonnes pertinentes pour l’étude de la fréquentation vélo comme la pluie, le vent ou
-encore la neige, puis nous avons utilisé un backfill pour compléter les données manquantes sur
-certaines heures.
-                    </p>''',  unsafe_allow_html=True)
-        st.header('Distribution')
+        df_meteo =pd.read_csv("Datas/donnees-synop-essentielles-omm.csv", sep=";")
+        st.write(df_meteo.head())
+
 
     if data == 'Dataset final':
         st.header('Description')
         st.markdown('''<p style='text-align: justify'>
-                    A ce dataset, nous avons ajoutédes données sur les
+                    Au dataset rassemblant toute les données précédentes, nous avons ajouté des données sur les
                     <a href= "https://www.data.gouv.fr/fr/datasets/vacances-scolaires-par-zones/">
                      vacances scolaires</a>
-                     et sur les
+                     , sur les
                      <a href= "https://www.data.gouv.fr/fr/datasets/jours-feries-en-france/">
                      jours fériés</a> et les confinements.
                     </p>''',  unsafe_allow_html=True)
+                    
+        # Import du df_hour
+        df_hour = pd.read_csv(dataset_2018_2021_donnees_velib_meteo_hour)
+        df_final = df_hour.drop(['Unnamed: 0'], axis = 1)
+        st.text('Affichage des 5 premières lignes du dataset')
+        st.write(df_final.head())
+        
+        st.header('Preprocessing')
+        st.markdown('''<p style='text-align: justify'>
+                    Lorsque nous avons voulu introduire les données météos à notre dataset initial, nous
+                    nous sommes aperçus que de nombreuses colonnes étaient inutiles ou comportaient beaucoup
+                    de NANs. De plus, les données météo n’étaient mises à jour que toutes les 3h et non toutes les
+                    heures comme notre dataset standard. Pour pallier ce problème, nous avons sélectionné
+                    certaines colonnes pertinentes pour l’étude de la fréquentation vélo comme la pluie, le vent ou
+                    encore la neige, puis nous avons utilisé un backfill pour compléter les données manquantes sur
+                    certaines heures.
+                    </p>''',  unsafe_allow_html=True)
+                    
+        st.header('Distribution')
+        Liste_col = ['Count_by_hour', 'Latitude', 'Longitude',
+             'M_Date_Count', 'D_Date_Count', 'Dweek_Date_Count', 'H_Date_Count',
+             'Y_Date_Instal', 'M_Date_Instal', 'D_Date_Instal',
+             'T°C', 'Precip_last3h', 'HR%', 'High_ice','Wind_speed_mean10mn']
+        
 
+        df_final['Latitude'] = df_final['Latitude'].astype('float64')
+        df_final['Longitude'] = df_final['Longitude'].astype('float64')
+        option2 = st.selectbox('Sélectionner la variable', Liste_col) 
+        for col in Liste_col:
+            if option2 == col:
+                fig = plt.figure(figsize = (10,4))
+                st.write(sns.boxplot(data=df_final, y=col, x = 'Y_Date_Count'))
+                st.pyplot(fig)
+        
+
+        
 # Evolution Temporelle
 if parties == sommaire[2]:
     st.title(parties)
-        
+
     # Import du df_hour
     df_hour = pd.read_csv(dataset_2018_2021_donnees_velib_meteo_hour)
     # Suppression des col inutiles
@@ -313,10 +338,10 @@ if parties == sommaire[3]:
                 
     # Selection du compteur via selectbox            
     selectAddress = st.selectbox('select address', data.Address_Dir.unique())
-    st.write('Addresse selectionné :', selectAddress)
+    st.write('Addresse selectionnée :', selectAddress)
     
     # Selection du jour, mois et années par l'utilisateur
-    d = st.date_input('selection de la date', datetime.date(2020, 7, 6))
+    d = st.date_input('Selection de la date', datetime.date(2020, 7, 6))
     st.write('Date selectionnée:', d)
 
     
